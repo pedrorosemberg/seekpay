@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SeekPay - Sua nova solução financeira</title>
+    <link rel="stylesheet" href="home-styles.css">
+</head>
+<body>
+    <header>
+        <a href="index.html"><div class="logo"><img src="seekpay.png"alt="Logo da SeekPay Fintech"></a>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="index.html">Visão geral</a></li>
+                <li><a href="#">Lançamentos</a></li>
+                <li><a href="#">Relatórios</a></li>
+                <li><a href="#">Metas</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <section class="summary">
+            <div class="summary-item">
+                <p>Saldo total</p>
+                <h3>R$ 8.600,20</h3>
+            </div>
+            <div class="summary-item">
+                <p>Receita mensal</p>
+                <h3>+ R$ 8.600,20</h3>
+            </div>
+            <div class="summary-item">
+                <p>Despesa mensal</p>
+                <h3>- R$ 1.900,60</h3>
+            </div>
+        </section>
+        <section class="accounts">
+            <h2>Minha contas</h2>
+            <div class="account-total">
+                <span><strong>Saldo total</strong></span>
+                <span><strong>+R$ 12.200,90</strong></span>
+            </div>
+            <div class="account negative">
+                <span>Itaú Unibanco</span>
+                <span>R$ -1.200,90</span>
+            </div>
+            <div class="account">
+                <span>Banco Inter</span>
+                <span>R$ 1.200,90</span>
+            </div>
+            <div class="account">
+                <span>Caixa EF</span>
+                <span>R$ 5.000,00</span>
+            </div>
+            <div class="account">
+                <span>NuBank</span>
+                <span>R$ 6.000,00</span>
+            </div>
+            <button class="add-account">
+                <a href="gestor.html">Adicionar</a>
+            </button>
+        </section>
+        <section class="expenses">
+            <h2>Maiores gastos do último mês</h2>
+            <div class="expense">
+                <div class="color education"></div>
+                <span><strong>Educação</strong></span>
+                <span><b>45,26%</b></span>
+            </div>
+            <div class="expense">
+                <div class="color health"></div>
+                <span><strong>Saúde</strong></span>
+                <span><b>18,09%</b></span>
+            </div>
+            <div class="expense">
+                <div class="color investments"></div>
+                <span><Strong>Compras</Strong></span>
+                <span><b>12,89%</b></span>
+            </div>
+            <div class="expense">
+                <div class="color pet"></div>
+                <span><Strong>Pet</Strong></span>
+                <span><b>02,03%</b></span>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <div class="footer-content">
+            <div class="logo">CODEVER</div>
+            <p>&copy;2024 Codever Tecnologia</p>
+            <div class="footer-links">
+                <a href="#">Cookies</a>
+                <a href="#">Privacidade</a>
+                <a href="#">Termos</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
