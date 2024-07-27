@@ -1,0 +1,244 @@
+@import url('https://fonts.googleapis.com/css2?family=Varela+Round&display=swap');
+
+/* Basic reset and styling */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Varela Round', sans-serif;
+}
+
+img {
+    width: 50%;
+    height: auto;
+    position: relative;
+    right: 12em
+}
+
+.PrivacyInfo {
+    text-align: left;
+}
+
+.PrivacyInfo-item {
+    text-align: justify;
+}
+
+body {
+    font-family: 'Varela Round', sans-serif;
+    background-color: #d3d3d3;
+    color: #050419;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+header {
+    background-color: #050419;
+    color: #ffffff;
+    width: 100%;
+    padding: 1em 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+header .logo {
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-left: 2em;
+}
+
+header nav ul {
+    list-style: none;
+    display: flex;
+    margin-right: 2em;
+}
+
+header nav ul li {
+    margin-left: 2em;
+}
+
+header nav ul li a {
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 1.1em;
+}
+
+main {
+    width: 90%;
+    max-width: 1200px;
+    margin: 2em auto;
+}
+
+.summary {
+    display: flex;
+    justify-content: space-around;
+    background-color: #f0f2f5;
+    padding: 1em;
+    border-radius: 10px;
+}
+
+.summary-item {
+    background-color: #a6e5f8;
+    padding: 1em;
+    border-radius: 10px;
+    width: 30%;
+    text-align: center;
+}
+
+.summary-item:nth-child(2) {
+    background-color: #94f5d3;
+}
+
+.summary-item:nth-child(3) {
+    background-color: #fababa;
+}
+
+.summary-item p {
+    font-size: 1.1em;
+    color: #6c757d;
+}
+
+.summary-item h3 {
+    font-size: 1.5em;
+    color: #050419;
+}
+
+.accounts {
+    margin: 2em 0;
+    background-color: #f0f2f5;
+    padding: 1em;
+    border-radius: 10px;
+}
+
+.accounts h2 {
+    text-align: left;
+    font-size: 1.5em;
+    color: #050419;
+}
+
+.account {
+    background-color: #00FAA8;
+    color: #050419;
+    padding: 0.5em 1em;
+    margin: 0.5em 0;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: bold;
+}
+
+.account-total {
+    background-color: #050419;
+    color: #fefeff;
+    padding: 0.5em 1em;
+    margin: 0.5em 0;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.account.negative {
+    background-color: #f68787;
+}
+
+.add-account {
+    background-color: #050419;
+    color: #00FAA8;
+    padding: 0.5em 1em;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-top: 1em;
+    text-decoration: none;
+
+    a:link {
+        color: #00FAA8;
+    }
+
+    a:visited {
+        color: #00FAA8
+    }
+
+    a:hover {
+        color: #f0f2f5
+    }
+
+    a:active {
+        color: #050419
+    }
+}
+
+
+.expenses {
+    background-color: #f0f2f5;
+    padding: 1em;
+    border-radius: 10px;
+}
+
+.expenses h2 {
+    text-align: left;
+    font-size: 1.5em;
+    color: #050419;
+}
+
+.expense {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5em 0;
+}
+
+.expense .color {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+}
+
+.expense .education {
+    background-color: #ff3b3b;
+}
+
+.expense .health {
+    background-color: #3b7dff;
+}
+
+.expense .investments {
+    background-color: #00FAA8;
+}
+
+.expense .pet {
+    background-color: #ffb93b;
+}
+
+footer {
+    background-color: #050419;
+    color: #ffffff;
+    width: 100%;
+    padding: 1em 0;
+    font-family: "Varela Round";
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 90%;
+    max-width: 1200px;
+    margin: auto;
+    font-family: "Varela Round";
+}
+
+.footer-links {
+    display: flex;
+    gap: 1em;
+}
+
+.footer-links a {
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 0.9em;
+}
