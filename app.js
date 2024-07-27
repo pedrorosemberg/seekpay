@@ -12,6 +12,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const transactionsList = document.getElementById('transactions-list');
     const incomeExpenseChartElement = document.getElementById('income-expense-chart');
     const categoryPieChartElement = document.getElementById('category-pie-chart');
+    const supabaseUrl = 'https://hhuxfoqnksgghhyctksi.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhodXhmb3Fua3NnZ2hoeWN0a3NpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjIwNDc1OTksImV4cCI6MjAzNzYyMzU5OX0.AGCd7t0aFfNEegiU4YTAfSUH2rp4zqpRU-CPKv7fIoI';
+    const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
     let accounts = [];
     let transactions = [];
@@ -191,12 +194,4 @@ document.addEventListener('DOMContentLoaded', () => {
     updateTotalBalance();
     updateCharts();
 });
-
-
-const { data, error } = await supabase
-  .from('Seekpay_db')
-  .insert([
-    { some_column: 'someValue', other_column: 'otherValue' },
-  ])
-  .select()
           
