@@ -191,3 +191,12 @@ document.addEventListener('DOMContentLoaded', () => {
     updateTotalBalance();
     updateCharts();
 });
+
+
+const { data, error } = await supabase
+  .from('Seekpay_db')
+  .insert([
+    { some_column: 'someValue', other_column: 'otherValue' },
+  ])
+  .select()
+          
