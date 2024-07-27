@@ -223,7 +223,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (name && !isNaN(balance)) {
             addAccount(name, balance);
         } else {
-            alert('Preencha todos os campos corretamente.');
+                        alert('Preencha todos os campos corretamente.');
         }
     });
 
@@ -233,7 +233,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Carrega contas ao iniciar
     loadAccounts();
 
+    // Funções de inicialização
     updateTransactionCategories();
     updateTotalBalance();
     updateCharts();
 });
+
