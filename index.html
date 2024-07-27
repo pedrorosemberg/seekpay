@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestor Financeiro</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Inclua o Chart.js antes do app.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</head>
+<header>
+    <a href="index.html">
+        <div class="logo"><img src="seekpay.png" alt="Logo da SeekPay Fintech">
+    </a>
+    </div>
+    <nav>
+        <ul>
+            <li><a href="#">Visão geral</a></li>
+            <li><a href="#">Lançamentos</a></li>
+            <li><a href="#">Relatórios</a></li>
+            <li><a href="#">Metas</a></li>
+        </ul>
+    </nav>
+</header>
+
+<body>
+    <div class="container">
+        <h1>Gestor Financeiro</h1>
+
+        <!-- Seção de contas bancárias -->
+        <div class="section">
+            <h2>Contas Bancárias</h2>
+            <input type="text" id="account-name" placeholder="Nome da Conta">
+            <input type="number" id="account-balance" placeholder="Saldo Inicial">
+            <button id="add-account-button">Adicionar Conta</button>
+            <ul id="accounts-list"></ul>
+            <p>Saldo Total: <span id="total-balance">R$0.00</span></p>
+        </div>
+
+        <!-- Seção de movimentos financeiros -->
+        <div class="section">
+            <h2>Movimentos Financeiros</h2>
+            <select id="transaction-type">
+                <option value="entry">Entrada</option>
+                <option value="exit">Saída</option>
+            </select>
+            <select id="transaction-category"></select>
+            <input type="number" id="transaction-amount" placeholder="Valor">
+            <input type="date" id="transaction-date" placeholder="Data de Pagamento">
+            <select id="transaction-account" placeholder="Conta Bancária"></select>
+            <button id="add-transaction-button">Adicionar Movimento</button>
+            <ul id="transactions-list"></ul>
+        </div>
+
+        <!-- Seção de relatórios -->
+        <div class="section">
+            <h2>Relatórios</h2>
+            <canvas id="income-expense-chart"></canvas>
+            <canvas id="category-pie-chart"></canvas>
+        </div>
+    </div>
+    <footer>
+        <div class="footer-content">
+            <div class="logo">CODEVER</div>
+            <p>&copy;2024 Codever Tecnologia - CNPJ 53.285.079/0001-25</p>
+            <div class="footer-links">
+                <a href="index.html">Cookies</a>
+                <a href="index.html">Privacidade</a>
+                <a href="#Termos">Termos</a>
+                <a href="LICENSE">Licença</a>
+            </div>
+        </div>
+    </footer>
+    <script src="app.js"></script>
+</body>
+
+</html>
