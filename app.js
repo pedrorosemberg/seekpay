@@ -12,9 +12,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const transactionsList = document.getElementById('transactions-list');
     const incomeExpenseChartElement = document.getElementById('income-expense-chart');
     const categoryPieChartElement = document.getElementById('category-pie-chart');
-    const supabaseUrl = 'https://hhuxfoqnksgghhyctksi.supabase.co';
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhodXhmb3Fua3NnZ2hoeWN0a3NpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjIwNDc1OTksImV4cCI6MjAzNzYyMzU5OX0.AGCd7t0aFfNEegiU4YTAfSUH2rp4zqpRU-CPKv7fIoI';
-    const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
     let accounts = [];
     let transactions = [];
@@ -44,41 +41,26 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    async function addAccount(name, balance) {
-        const { data, error } = await supabase
-            .from('accounts')
-            .insert([{ name: name, balance: balance }]);
-        
-        if (error) {
-            console.error('Erro ao adicionar conta:', error.message);
-        } else {
-            console.log('Conta adicionada:', data);
-            loadAccounts(); // Atualiza a lista de contas
+    function addAccount() {
+        const accountName = accountNameInput.value.trim();
+        const accountBalance = parseFloat(accountBalanceInput.value);
+
+        if (!accountName || isNaN(accountBalance)) {
+            alert('Por favor, insira uma conta bancária válida e um saldo.');
+            return;
         }
-    }
 
-    async function loadAccounts() {
-        const { data, error } = await supabase
-            .from('accounts')
-            .select('*');
+        accounts.push({ name: accountName, balance: accountBalance });
+        accountNameInput.value = '';
+        accountBalanceInput.value = '';
 
-        if (error) {
-            console.error('Erro ao carregar contas:', error.message);
-        } else {
-            accountsList.innerHTML = ''; // Limpa a lista antes de adicionar novas contas
+        const accountElement = document.createElement('li');
+        accountElement.textContent = `${accountName}: R$${accountBalance.toFixed(2)}`;
+        accountElement.dataset.accountName = accountName;
+        accountsList.appendChild(accountElement);
 
-            data.forEach(account => {
-                const accountElement = document.createElement('li');
-                accountElement.textContent = `${account.name}: R$${account.balance.toFixed(2)}`;
-                accountElement.dataset.accountName = account.name;
-                accountsList.appendChild(accountElement);
-            });
-
-            // Atualiza a lista de contas no array
-            accounts = data;
-            updateTotalBalance();
-            updateAccountOptions();
-        }
+        updateTotalBalance();
+        updateAccountOptions();
     }
 
     function updateAccountOptions() {
@@ -93,7 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    async function addTransaction() {
+    function addTransaction() {
         const transactionType = transactionTypeSelect.value;
         const transactionCategory = transactionCategorySelect.value;
         const transactionAmount = parseFloat(transactionAmountInput.value);
@@ -118,43 +100,27 @@ document.addEventListener('DOMContentLoaded', () => {
             date: transactionDate,
             account: transactionAccount
         });
+        transactionAmountInput.value = '';
+        transactionDateInput.value = '';
 
-        const { data, error } = await supabase
-            .from('transactions')
-            .insert([{
-                type: transactionType,
-                category: transactionCategory,
-                amount: transactionAmount,
-                date: transactionDate,
-                account: transactionAccount
-            }]);
+        const transactionElement = document.createElement('li');
+        transactionElement.textContent = `${transactionDate} - ${transactionType === 'entry' ? 'Recebível' : 'Gasto/Despesa'}: ${transactionCategory} - R$${transactionAmount.toFixed(2)} (Conta: ${transactionAccount})`;
 
-        if (error) {
-            console.error('Erro ao adicionar transação:', error.message);
+        if (transactionType === 'entry') {
+            transactionElement.style.color = 'green';
+            transactionElement.textContent = `+ ${transactionElement.textContent}`;
+            account.balance += transactionAmount;
         } else {
-            console.log('Transação adicionada:', data);
-            transactionAmountInput.value = '';
-            transactionDateInput.value = '';
-
-            const transactionElement = document.createElement('li');
-            transactionElement.textContent = `${transactionDate} - ${transactionType === 'entry' ? 'Recebível' : 'Gasto/Despesa'}: ${transactionCategory} - R$${transactionAmount.toFixed(2)} (Conta: ${transactionAccount})`;
-
-            if (transactionType === 'entry') {
-                transactionElement.style.color = 'green';
-                transactionElement.textContent = `+ ${transactionElement.textContent}`;
-                account.balance += transactionAmount;
-            } else {
-                transactionElement.style.color = 'red';
-                transactionElement.textContent = `- ${transactionElement.textContent}`;
-                account.balance -= transactionAmount;
-            }
-
-            transactionsList.appendChild(transactionElement);
-
-            updateTotalBalance();
-            updateAccountBalance(account);
-            updateCharts();
+            transactionElement.style.color = 'red';
+            transactionElement.textContent = `- ${transactionElement.textContent}`;
+            account.balance -= transactionAmount;
         }
+
+        transactionsList.appendChild(transactionElement);
+
+        updateTotalBalance();
+        updateAccountBalance(account);
+        updateCharts();
     }
 
     function updateAccountBalance(account) {
@@ -217,25 +183,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    addAccountButton.addEventListener('click', () => {
-        const name = accountNameInput.value;
-        const balance = parseFloat(accountBalanceInput.value);
-        if (name && !isNaN(balance)) {
-            addAccount(name, balance);
-        } else {
-                        alert('Preencha todos os campos corretamente.');
-        }
-    });
-
+    addAccountButton.addEventListener('click', addAccount);
     addTransactionButton.addEventListener('click', addTransaction);
     transactionTypeSelect.addEventListener('change', updateTransactionCategories);
 
-    // Carrega contas ao iniciar
-    loadAccounts();
-
-    // Funções de inicialização
     updateTransactionCategories();
     updateTotalBalance();
     updateCharts();
 });
-
