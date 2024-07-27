@@ -191,3 +191,57 @@ document.addEventListener('DOMContentLoaded', () => {
     updateTotalBalance();
     updateCharts();
 });
+// Substitua pelos valores reais do Supabase
+const supabaseUrl = 'YOUR_SUPABASE_URL';
+const supabaseKey = 'YOUR_SUPABASE_ANON_KEY';
+const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+// Função para adicionar uma conta
+async function addAccount(name, balance) {
+    const { data, error } = await supabase
+        .from('accounts')
+        .insert([{ name: name, balance: balance }]);
+    
+    if (error) {
+        console.error('Erro ao adicionar conta:', error);
+    } else {
+        console.log('Conta adicionada:', data);
+        loadAccounts(); // Atualiza a lista de contas
+    }
+}
+
+// Função para carregar contas
+async function loadAccounts() {
+    const { data, error } = await supabase
+        .from('accounts')
+        .select('*');
+
+    if (error) {
+        console.error('Erro ao carregar contas:', error);
+    } else {
+        const accountsList = document.getElementById('accounts-list');
+        accountsList.innerHTML = ''; // Limpa a lista antes de adicionar novas contas
+
+        data.forEach(account => {
+            const accountElement = document.createElement('li');
+            accountElement.textContent = `${account.name}: R$${account.balance.toFixed(2)}`;
+            accountsList.appendChild(accountElement);
+        });
+    }
+}
+
+// Chama a função de carregamento ao iniciar
+document.addEventListener('DOMContentLoaded', () => {
+    loadAccounts();
+
+    // Event listener para adicionar conta
+    document.getElementById('add-account-button').addEventListener('click', () => {
+        const name = document.getElementById('account-name').value;
+        const balance = parseFloat(document.getElementById('account-balance').value);
+        if (name && !isNaN(balance)) {
+            addAccount(name, balance);
+        } else {
+            alert('Preencha todos os campos corretamente.');
+        }
+    });
+});
