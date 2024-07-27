@@ -1,0 +1,359 @@
+Estou integrando o supabase ao meu projeto que está no GitHub.
+Meu banco de dados possui 11 colunas:
+id: criado para me informar um log da pessoa que inclui os dados.
+criado em: para retornar a data e hora da criação dos dados.
+criado_por: para salvar o nome da pessoa que inclui os dados.
+nome_da_conta: que salva o nome da conta criada
+saldo_inicial_da_conta: que salva o o valor da conta criada.
+tipo_de_entrada: que salva se é uma movimentação de entrada ou de saída.
+tipo_de_movimentacao: salva a categoria da movimentação (investimentos, aluguéis, etc.)
+valor_da_movimentacao: o valor da movimentação adicionada.
+data_da_movimentação: salva apenas a data da transação.
+conta_bancaria_relacionada: relaciona com uma conta bancária já adicionada.
+id-log_da_movimentacao: um código numérico gerado aleatoriamente, assim que incluso uma movimentação. 
+
+Já incluí o Cliente Supabase ao Projeto, incluindo no meu código html o script: <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@latest/dist/supabase.min.js"></script>; ele ficou assim:
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestor Financeiro</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Inclua o Chart.js antes do app.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@latest/dist/supabase.min.js"></script>
+
+</head>
+<header>
+    <a href="index.html">
+        <div class="logo"><img src="seekpay.png" alt="Logo da SeekPay Fintech">
+    </a>
+    </div>
+    <nav>
+        <ul>
+            <li><a href="#">Visão geral</a></li>
+            <li><a href="#">Lançamentos</a></li>
+            <li><a href="#">Relatórios</a></li>
+            <li><a href="#">Metas</a></li>
+        </ul>
+    </nav>
+</header>
+
+<body>
+    <div class="container">
+        <h1>Gestor Financeiro</h1>
+
+        <!-- Seção de contas bancárias -->
+        <div class="section">
+            <h2>Contas Bancárias</h2>
+            <input type="text" id="account-name" placeholder="Nome da Conta">
+            <input type="number" id="account-balance" placeholder="Saldo Inicial">
+            <button id="add-account-button">Adicionar Conta</button>
+            <ul id="accounts-list"></ul>
+            <p>Saldo Total: <span id="total-balance">R$0.00</span></p>
+        </div>
+
+        <!-- Seção de movimentos financeiros -->
+        <div class="section">
+            <h2>Movimentos Financeiros</h2>
+            <select id="transaction-type">
+                <option value="entry">Entrada</option>
+                <option value="exit">Saída</option>
+            </select>
+            <select id="transaction-category"></select>
+            <input type="number" id="transaction-amount" placeholder="Valor">
+            <input type="date" id="transaction-date" placeholder="Data de Pagamento">
+            <select id="transaction-account" placeholder="Conta Bancária"></select>
+            <button id="add-transaction-button">Adicionar Movimento</button>
+            <ul id="transactions-list"></ul>
+        </div>
+
+        <!-- Seção de relatórios -->
+        <div class="section">
+            <h2>Relatórios</h2>
+            <canvas id="income-expense-chart"></canvas>
+            <canvas id="category-pie-chart"></canvas>
+        </div>
+    </div>
+    <footer>
+        <div class="footer-content">
+            <div class="logo">CODEVER</div>
+            <p>&copy;2024 Codever Tecnologia - CNPJ 53.285.079/0001-25</p>
+            <div class="footer-links">
+                <a href="index.html">Cookies</a>
+                <a href="index.html">Privacidade</a>
+                <a href="#Termos">Termos</a>
+                <a href="LICENSE">Licença</a>
+            </div>
+        </div>
+    </footer>
+    <script src="app.js"></script>
+</body>
+
+</html>
+; e já incluí o código que relaciona ao banco de dados no meu arquivo JavaScript, ele ficou assim:
+
+document.addEventListener('DOMContentLoaded', () => {
+    const accountNameInput = document.getElementById('account-name');
+    const accountBalanceInput = document.getElementById('account-balance');
+    const addAccountButton = document.getElementById('add-account-button');
+    const accountsList = document.getElementById('accounts-list');
+    const totalBalanceSpan = document.getElementById('total-balance');
+    const transactionTypeSelect = document.getElementById('transaction-type');
+    const transactionCategorySelect = document.getElementById('transaction-category');
+    const transactionAmountInput = document.getElementById('transaction-amount');
+    const transactionDateInput = document.getElementById('transaction-date');
+    const addTransactionButton = document.getElementById('add-transaction-button');
+    const transactionsList = document.getElementById('transactions-list');
+    const incomeExpenseChartElement = document.getElementById('income-expense-chart');
+    const categoryPieChartElement = document.getElementById('category-pie-chart');
+
+    let accounts = [];
+    let transactions = [];
+
+    let incomeExpenseChart;
+    let categoryPieChart;
+
+    function updateTotalBalance() {
+        const totalBalance = accounts.reduce((sum, account) => sum + account.balance, 0);
+        totalBalanceSpan.textContent = `R$${totalBalance.toFixed(2)}`;
+        totalBalanceSpan.style.color = totalBalance >= 0 ? 'blue' : 'red';
+    }
+
+    function updateTransactionCategories() {
+        const transactionType = transactionTypeSelect.value;
+        transactionCategorySelect.innerHTML = '';
+
+        const categories = transactionType === 'entry'
+            ? ['Investimentos', 'Salário e Pagamentos', 'Outros']
+            : ['Aluguel', 'Impostos', 'Folha de Pagamento', 'Taxas', 'Contas', 'Assinaturas'];
+
+        categories.forEach(category => {
+            const option = document.createElement('option');
+            option.value = category;
+            option.textContent = category;
+            transactionCategorySelect.appendChild(option);
+        });
+    }
+
+    function addAccount() {
+        const accountName = accountNameInput.value.trim();
+        const accountBalance = parseFloat(accountBalanceInput.value);
+
+        if (!accountName || isNaN(accountBalance)) {
+            alert('Por favor, insira uma conta bancária válida e um saldo.');
+            return;
+        }
+
+        accounts.push({ name: accountName, balance: accountBalance });
+        accountNameInput.value = '';
+        accountBalanceInput.value = '';
+
+        const accountElement = document.createElement('li');
+        accountElement.textContent = `${accountName}: R$${accountBalance.toFixed(2)}`;
+        accountElement.dataset.accountName = accountName;
+        accountsList.appendChild(accountElement);
+
+        updateTotalBalance();
+        updateAccountOptions();
+    }
+
+    function updateAccountOptions() {
+        const accountSelect = document.getElementById('transaction-account');
+        accountSelect.innerHTML = '';
+
+        accounts.forEach(account => {
+            const option = document.createElement('option');
+            option.value = account.name;
+            option.textContent = account.name;
+            accountSelect.appendChild(option);
+        });
+    }
+
+    function addTransaction() {
+        const transactionType = transactionTypeSelect.value;
+        const transactionCategory = transactionCategorySelect.value;
+        const transactionAmount = parseFloat(transactionAmountInput.value);
+        const transactionDate = transactionDateInput.value;
+        const transactionAccount = document.getElementById('transaction-account').value;
+
+        if (isNaN(transactionAmount) || !transactionDate || !transactionAccount) {
+            alert('Por favor, insira todos os detalhes da transação corretamente.');
+            return;
+        }
+
+        const account = accounts.find(acc => acc.name === transactionAccount);
+        if (!account) {
+            alert('Conta bancária não encontrada.');
+            return;
+        }
+
+        transactions.push({
+            type: transactionType,
+            category: transactionCategory,
+            amount: transactionAmount,
+            date: transactionDate,
+            account: transactionAccount
+        });
+        transactionAmountInput.value = '';
+        transactionDateInput.value = '';
+
+        const transactionElement = document.createElement('li');
+        transactionElement.textContent = `${transactionDate} - ${transactionType === 'entry' ? 'Recebível' : 'Gasto/Despesa'}: ${transactionCategory} - R$${transactionAmount.toFixed(2)} (Conta: ${transactionAccount})`;
+
+        if (transactionType === 'entry') {
+            transactionElement.style.color = 'green';
+            transactionElement.textContent = `+ ${transactionElement.textContent}`;
+            account.balance += transactionAmount;
+        } else {
+            transactionElement.style.color = 'red';
+            transactionElement.textContent = `- ${transactionElement.textContent}`;
+            account.balance -= transactionAmount;
+        }
+
+        transactionsList.appendChild(transactionElement);
+
+        updateTotalBalance();
+        updateAccountBalance(account);
+        updateCharts();
+    }
+
+    function updateAccountBalance(account) {
+        const accountElements = Array.from(accountsList.children);
+        const accountElement = accountElements.find(element => element.dataset.accountName === account.name);
+        if (accountElement) {
+            accountElement.textContent = `${account.name}: R$${account.balance.toFixed(2)}`;
+        }
+    }
+
+    function updateCharts() {
+        const entrySum = transactions
+            .filter(transaction => transaction.type === 'entry')
+            .reduce((sum, transaction) => sum + transaction.amount, 0);
+
+        const exitSum = transactions
+            .filter(transaction => transaction.type === 'exit')
+            .reduce((sum, transaction) => sum + transaction.amount, 0);
+
+        if (incomeExpenseChart) {
+            incomeExpenseChart.data.datasets[0].data = [entrySum, exitSum];
+            incomeExpenseChart.update();
+        } else {
+            incomeExpenseChart = new Chart(incomeExpenseChartElement, {
+                type: 'bar',
+                data: {
+                    labels: ['Recebível', 'Gasto/Despesa'],
+                    datasets: [{
+                        label: 'Recebíveis vs Gastos/Despesas',
+                        data: [entrySum, exitSum],
+                        backgroundColor: ['green', 'red']
+                    }]
+                }
+            });
+        }
+
+        const categorySum = {};
+        transactions.forEach(transaction => {
+            if (!categorySum[transaction.category]) {
+                categorySum[transaction.category] = 0;
+            }
+            categorySum[transaction.category] += transaction.amount;
+        });
+
+        if (categoryPieChart) {
+            categoryPieChart.data.labels = Object.keys(categorySum);
+            categoryPieChart.data.datasets[0].data = Object.values(categorySum);
+            categoryPieChart.update();
+        } else {
+            categoryPieChart = new Chart(categoryPieChartElement, {
+                type: 'pie',
+                data: {
+                    labels: Object.keys(categorySum),
+                    datasets: [{
+                        data: Object.values(categorySum),
+                        backgroundColor: ['blue', 'orange', 'purple', 'yellow', 'pink']
+                    }]
+                }
+            });
+        }
+    }
+
+    addAccountButton.addEventListener('click', addAccount);
+    addTransactionButton.addEventListener('click', addTransaction);
+    transactionTypeSelect.addEventListener('change', updateTransactionCategories);
+
+    updateTransactionCategories();
+    updateTotalBalance();
+    updateCharts();
+});
+// Substitua pelos valores reais do Supabase
+const supabaseUrl = 'YOUR_SUPABASE_URL';
+const supabaseKey = 'YOUR_SUPABASE_ANON_KEY';
+const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+// Função para adicionar uma conta
+async function addAccount(name, balance) {
+    const { data, error } = await supabase
+        .from('accounts')
+        .insert([{ name: name, balance: balance }]);
+    
+    if (error) {
+        console.error('Erro ao adicionar conta:', error);
+    } else {
+        console.log('Conta adicionada:', data);
+        loadAccounts(); // Atualiza a lista de contas
+    }
+}
+
+// Função para carregar contas
+async function loadAccounts() {
+    const { data, error } = await supabase
+        .from('accounts')
+        .select('*');
+
+    if (error) {
+        console.error('Erro ao carregar contas:', error);
+    } else {
+        const accountsList = document.getElementById('accounts-list');
+        accountsList.innerHTML = ''; // Limpa a lista antes de adicionar novas contas
+
+        data.forEach(account => {
+            const accountElement = document.createElement('li');
+            accountElement.textContent = `${account.name}: R$${account.balance.toFixed(2)}`;
+            accountsList.appendChild(accountElement);
+        });
+    }
+}
+
+// Chama a função de carregamento ao iniciar
+document.addEventListener('DOMContentLoaded', () => {
+    loadAccounts();
+
+    // Event listener para adicionar conta
+    document.getElementById('add-account-button').addEventListener('click', () => {
+        const name = document.getElementById('account-name').value;
+        const balance = parseFloat(document.getElementById('account-balance').value);
+        if (name && !isNaN(balance)) {
+            addAccount(name, balance);
+        } else {
+            alert('Preencha todos os campos corretamente.');
+        }
+    });
+}); 
+
+Falta algo mais que preciso fazer para relacionar meu banco de dados ao código?
+
+--------------------------
+acho que o problema está também no fato de que os nomes das colunas está diferente no supabase e no código. No supabase, os nomes são: id: criado para me informar um log da pessoa que inclui os dados.
+criado em: para retornar a data e hora da criação dos dados.
+criado_por: para salvar o nome da pessoa que inclui os dados.
+nome_da_conta: que salva o nome da conta criada
+saldo_inicial_da_conta: que salva o o valor da conta criada.
+tipo_de_entrada: que salva se é uma movimentação de entrada ou de saída.
+tipo_de_movimentacao: salva a categoria da movimentação (investimentos, aluguéis, etc.)
+valor_da_movimentacao: o valor da movimentação adicionada.
+data_da_movimentação: salva apenas a data da transação.
+conta_bancaria_relacionada: relaciona com uma conta bancária já adicionada.
+id-log_da_movimentacao: um código numérico gerado aleatoriamente, assim que incluso uma movimentação. 
