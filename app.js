@@ -13,10 +13,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const incomeExpenseChartElement = document.getElementById('income-expense-chart');
     const categoryPieChartElement = document.getElementById('category-pie-chart');
 
-    const supabaseUrl = 'https://hhuxfoqnksgghhyctksi.supabase.co';
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhodXhmb3Fua3NnZ2hoeWN0a3NpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjIwNDc1OTksImV4cCI6MjAzNzYyMzU5OX0.AGCd7t0aFfNEegiU4YTAfSUH2rp4zqpRU-CPKv7fIoI';
-    const supabase = supabase.createClient(supabaseUrl, supabaseKey);
-
     let accounts = [];
     let transactions = [];
 
@@ -45,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    async function addAccount() {
+    function addAccount() {
         const accountName = accountNameInput.value.trim();
         const accountBalance = parseFloat(accountBalanceInput.value);
 
@@ -54,43 +50,17 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        const { data, error } = await supabase
-            .from('accounts')
-            .insert([{ 
-                nome_da_conta: accountName, 
-                saldo_inicial_da_conta: accountBalance 
-            }]);
-
-        if (error) {
-            console.error('Erro ao adicionar conta:', error.message);
-        } else {
-            console.log('Conta adicionada:', data);
-            loadAccounts(); // Atualiza a lista de contas
-        }
-
+        accounts.push({ name: accountName, balance: accountBalance });
         accountNameInput.value = '';
         accountBalanceInput.value = '';
-    }
 
-    async function loadAccounts() {
-        const { data, error } = await supabase
-            .from('accounts')
-            .select('*');
+        const accountElement = document.createElement('li');
+        accountElement.textContent = `${accountName}: R$${accountBalance.toFixed(2)}`;
+        accountElement.dataset.accountName = accountName;
+        accountsList.appendChild(accountElement);
 
-        if (error) {
-            console.error('Erro ao carregar contas:', error.message);
-        } else {
-            accountsList.innerHTML = '';
-
-            data.forEach(account => {
-                const accountElement = document.createElement('li');
-                accountElement.textContent = `${account.nome_da_conta}: R$${account.saldo_inicial_da_conta.toFixed(2)}`;
-                accountElement.dataset.accountName = account.nome_da_conta;
-                accountsList.appendChild(accountElement);
-            });
-
-            updateAccountOptions();
-        }
+        updateTotalBalance();
+        updateAccountOptions();
     }
 
     function updateAccountOptions() {
@@ -99,13 +69,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         accounts.forEach(account => {
             const option = document.createElement('option');
-            option.value = account.nome_da_conta;
-            option.textContent = account.nome_da_conta;
+            option.value = account.name;
+            option.textContent = account.name;
             accountSelect.appendChild(option);
         });
     }
 
-    async function addTransaction() {
+    function addTransaction() {
         const transactionType = transactionTypeSelect.value;
         const transactionCategory = transactionCategorySelect.value;
         const transactionAmount = parseFloat(transactionAmountInput.value);
@@ -117,67 +87,58 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        const account = accounts.find(acc => acc.nome_da_conta === transactionAccount);
+        const account = accounts.find(acc => acc.name === transactionAccount);
         if (!account) {
             alert('Conta bancária não encontrada.');
             return;
         }
 
-        const { data, error } = await supabase
-            .from('transactions')
-            .insert([{
-                tipo_de_entrada: transactionType,
-                tipo_de_movimentacao: transactionCategory,
-                valor_da_movimentacao: transactionAmount,
-                data_da_movimentacao: transactionDate,
-                conta_bancaria_relacionada: transactionAccount
-            }]);
-
-        if (error) {
-            console.error('Erro ao adicionar transação:', error.message);
-        } else {
-            console.log('Transação adicionada:', data);
-
-            const transactionElement = document.createElement('li');
-            transactionElement.textContent = `${transactionDate} - ${transactionType === 'entry' ? 'Recebível' : 'Gasto/Despesa'}: ${transactionCategory} - R$${transactionAmount.toFixed(2)} (Conta: ${transactionAccount})`;
-
-            if (transactionType === 'entry') {
-                transactionElement.style.color = 'green';
-                transactionElement.textContent = `+ ${transactionElement.textContent}`;
-                account.balance += transactionAmount;
-            } else {
-                transactionElement.style.color = 'red';
-                transactionElement.textContent = `- ${transactionElement.textContent}`;
-                account.balance -= transactionAmount;
-            }
-
-            transactionsList.appendChild(transactionElement);
-
-            updateTotalBalance();
-            updateAccountBalance(account);
-            updateCharts();
-        }
-
+        transactions.push({
+            type: transactionType,
+            category: transactionCategory,
+            amount: transactionAmount,
+            date: transactionDate,
+            account: transactionAccount
+        });
         transactionAmountInput.value = '';
         transactionDateInput.value = '';
+
+        const transactionElement = document.createElement('li');
+        transactionElement.textContent = `${transactionDate} - ${transactionType === 'entry' ? 'Recebível' : 'Gasto/Despesa'}: ${transactionCategory} - R$${transactionAmount.toFixed(2)} (Conta: ${transactionAccount})`;
+
+        if (transactionType === 'entry') {
+            transactionElement.style.color = 'green';
+            transactionElement.textContent = `+ ${transactionElement.textContent}`;
+            account.balance += transactionAmount;
+        } else {
+            transactionElement.style.color = 'red';
+            transactionElement.textContent = `- ${transactionElement.textContent}`;
+            account.balance -= transactionAmount;
+        }
+
+        transactionsList.appendChild(transactionElement);
+
+        updateTotalBalance();
+        updateAccountBalance(account);
+        updateCharts();
     }
 
     function updateAccountBalance(account) {
         const accountElements = Array.from(accountsList.children);
-        const accountElement = accountElements.find(element => element.dataset.accountName === account.nome_da_conta);
+        const accountElement = accountElements.find(element => element.dataset.accountName === account.name);
         if (accountElement) {
-            accountElement.textContent = `${account.nome_da_conta}: R$${account.balance.toFixed(2)}`;
+            accountElement.textContent = `${account.name}: R$${account.balance.toFixed(2)}`;
         }
     }
 
     function updateCharts() {
         const entrySum = transactions
-            .filter(transaction => transaction.tipo_de_entrada === 'entry')
-            .reduce((sum, transaction) => sum + transaction.valor_da_movimentacao, 0);
+            .filter(transaction => transaction.type === 'entry')
+            .reduce((sum, transaction) => sum + transaction.amount, 0);
 
         const exitSum = transactions
-            .filter(transaction => transaction.tipo_de_entrada === 'exit')
-            .reduce((sum, transaction) => sum + transaction.valor_da_movimentacao, 0);
+            .filter(transaction => transaction.type === 'exit')
+            .reduce((sum, transaction) => sum + transaction.amount, 0);
 
         if (incomeExpenseChart) {
             incomeExpenseChart.data.datasets[0].data = [entrySum, exitSum];
@@ -198,10 +159,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const categorySum = {};
         transactions.forEach(transaction => {
-            if (!categorySum[transaction.tipo_de_movimentacao]) {
-                categorySum[transaction.tipo_de_movimentacao] = 0;
+            if (!categorySum[transaction.category]) {
+                categorySum[transaction.category] = 0;
             }
-            categorySum[transaction.tipo_de_movimentacao] += transaction.valor_da_movimentacao;
+            categorySum[transaction.category] += transaction.amount;
         });
 
         if (categoryPieChart) {
@@ -226,8 +187,6 @@ document.addEventListener('DOMContentLoaded', () => {
     addTransactionButton.addEventListener('click', addTransaction);
     transactionTypeSelect.addEventListener('change', updateTransactionCategories);
 
-    // Carregar contas ao iniciar
-    loadAccounts();
     updateTransactionCategories();
     updateTotalBalance();
     updateCharts();
