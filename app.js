@@ -273,4 +273,18 @@ document.addEventListener('DOMContentLoaded', () => {
     loadAccounts(); // Carregar contas ao iniciar
     loadTransactions(); // Carregar transações ao iniciar
 });
+async function addAccount(name, balance) {
+    const { data, error } = await supabase
+        .from('accounts')
+        .insert([{ name: name, balance: balance }]);
+
+    if (error) {
+        console.error('Erro ao adicionar conta:', error);
+        alert('Erro ao adicionar conta. Veja o console para detalhes.');
+    } else {
+        console.log('Conta adicionada:', data);
+        alert('Conta adicionada com sucesso!');
+        loadAccounts(); // Atualiza a lista de contas
+    }
+}
 
