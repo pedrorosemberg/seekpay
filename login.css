@@ -1,1 +1,153 @@
+@import url('https://fonts.googleapis.com/css2?family=Varela+Round&display=swap');
 
+/* Basic reset and styling */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Varela Round', sans-serif;
+}
+
+body {
+    font-family: 'Varela Round', sans-serif;
+    background-color: #d3d3d3;
+    color: #050419;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+header {
+    background-color: #050419;
+    color: #ffffff;
+    width: 100%;
+    padding: 1em 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo-img {
+    width: 100px; /* Tamanho ajustável da imagem */
+    height: auto;
+    margin-left: 10em;
+    image-rendering: auto;
+}
+
+header .logo {
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-left: 1em;
+}
+
+header nav ul {
+    list-style: none;
+    display: flex;
+    margin-right: 2em;
+}
+
+header nav ul li {
+    margin-left: 2em;
+}
+
+header nav ul li a {
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 1.1em;
+}
+
+main {
+    width: 90%;
+    max-width: 1200px;
+    margin: 2em auto;
+}
+
+.login {
+    border: 1px solid #050419;
+    width: 400px;
+    height: 500px;
+    background-color: #050419;
+    color: white;
+    border-radius: 20px;
+    box-shadow: 0px 0px 10px #050419;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    width: 100%;
+    padding: 40px;
+    backdrop-filter: brightness(40%);
+}
+
+h1 {
+    font-weight: normal;
+    font-size: 24px;
+    text-shadow: 0px 0px 2px #050419;
+    margin-bottom: 60px;
+}
+
+label {
+    color: rgba(255, 255, 255, 0.8);
+    text-transform: uppercase;
+    font-size: 10px;
+    letter-spacing: 2px;
+    padding-left: 10px;
+}
+
+input {
+    background: rgba(255, 255, 255, 0.3);
+    height: 40px;
+    line-height: 40px;
+    border-radius: 20px;
+    padding: 0px 20px;
+    border: none;
+    margin-bottom: 20px;
+    color: white;
+}
+
+button {
+    background: rgb(45, 126, 231);
+    height: 40px;
+    line-height: 40px;
+    border-radius: 40px;
+    padding: 0px 20px;
+    border: none;
+    margin: 10px 0px;
+    box-shadow: 0px 0px 5px #050419;
+    color: white;
+    cursor: pointer;
+}
+
+footer {
+    background-color: #050419;
+    color: #ffffff;
+    width: 100%;
+    padding: 1em 0;
+    font-family: "Varela Round";
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 90%;
+    max-width: 1200px;
+    margin: auto;
+}
+
+.footer-links {
+    display: flex;
+    gap: 1em;
+}
+
+.footer-links a {
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 0.9em;
+}
