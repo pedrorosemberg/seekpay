@@ -1,3 +1,11 @@
+var admin = require("firebase-admin");
+
+var serviceAccount = require("path/to/serviceAccountKey.json");
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount)
+});
+
 document.addEventListener('DOMContentLoaded', () => {
     const accountNameInput = document.getElementById('account-name');
     const accountBalanceInput = document.getElementById('account-balance');
@@ -190,4 +198,5 @@ document.addEventListener('DOMContentLoaded', () => {
     updateTransactionCategories();
     updateTotalBalance();
     updateCharts();
+    
 });
